@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	//    "os"
+	"os"
 	//    "os/exec"
 )
 
@@ -49,10 +49,23 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 				log.Println(err)
 			}
 
-			log.Println(vars.Host_name)
-			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-			rw.Header().Set("Server", "packed/0.1")
-			fmt.Fprint(rw, "{\"status\":\"ok\"}")
+			if vars.Host_name != "" {
+				fname := fmt.Sprintf("/tmp/variables_%s.json", vars.Templ_name)
+				vars_file, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
+				defer vars_file.Close()
+				if err != nil {
+					log.Println(err)
+				}
+				body, err := ioutil.ReadAll(req.Body)
+				_, err = vars_file.WriteString(string(body))
+				if err != nil {
+					log.Println(err)
+				}
+				rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+				rw.Header().Set("Server", "packed/0.1")
+				fmt.Fprint(rw, "{\"status\":\"ok\"}")
+
+			}
 		}
 	default:
 		{
