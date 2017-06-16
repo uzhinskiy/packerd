@@ -40,9 +40,12 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "POST":
 		{
+			body, err := ioutil.ReadAll(req.Body)
+			log.Println(string(body))
+
 			var vars variables_struct
 			decoder := json.NewDecoder(req.Body)
-			err := decoder.Decode(&vars)
+			err = decoder.Decode(&vars)
 			defer req.Body.Close()
 
 			if err != nil {
@@ -56,8 +59,7 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 				if err != nil {
 					log.Println(err)
 				}
-				body, err := ioutil.ReadAll(req.Body)
-				log.Println(string(body))
+
 				_, err = vars_file.WriteString(string(body))
 				if err != nil {
 					log.Println(err)
