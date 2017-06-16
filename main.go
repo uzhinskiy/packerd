@@ -10,8 +10,14 @@ import (
 	//    "os/exec"
 )
 
-type test_struct struct {
-	Test string
+type variables_struct struct {
+	xenserver_user     string
+	xenserver_password string
+	templ_name         string
+	mem_vol            int
+	disk_size1         int
+	cpu_num            string
+	host_name          string
 }
 
 func packerJson(rw http.ResponseWriter, req *http.Request) {
@@ -20,12 +26,12 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 		log.Println(err)
 	}
 	log.Println(string(body))
-	var t test_struct
-	err = json.Unmarshal(body, &t)
+	var vars variables_struct
+	err = json.Unmarshal(body, &vars)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(t.Test)
+	log.Println(vars.host_name)
 	fmt.Fprintf(rw, "OK\n")
 }
 
