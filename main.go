@@ -52,7 +52,7 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 			log.Println(vars.Host_name)
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
-			fmt.Fprint(rw, "{OK}")
+			fmt.Fprint(rw, "{'status':'ok'}")
 		}
 	default:
 		{
@@ -73,7 +73,7 @@ func packerPost(rw http.ResponseWriter, req *http.Request) {
 			fmt.Println("fname:", req.PostForm["fname"])
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
-			fmt.Fprint(rw, "{OK}")
+			fmt.Fprint(rw, "{'status':'ok'}")
 		}
 	default:
 		{
