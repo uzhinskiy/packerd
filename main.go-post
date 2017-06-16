@@ -1,0 +1,31 @@
+package main
+
+import (
+    "log"
+    "net/http"
+    "fmt"
+//    "os"
+//    "os/exec"
+)
+
+
+func packer(rw http.ResponseWriter, req *http.Request) {
+    log.Println(req);
+    if req.Method == "GET" {
+        fmt.Fprintf(rw,"wrong method")
+    } else {
+	log.Println(req);
+        req.ParseForm()
+        // logic part of log in
+        fmt.Println("fname:", req.PostFormValue("fname"))
+	fmt.Fprintf(rw,"OK\n")
+    }
+}
+
+func main() {
+    http.HandleFunc("/packer", packer)
+    err:=http.ListenAndServe(":8080", nil)
+    if err != nil {
+        log.Fatal("ListenAndServe: ", err)
+    }
+}
