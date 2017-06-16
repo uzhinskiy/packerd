@@ -36,7 +36,6 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 }
 
 func packerPost(rw http.ResponseWriter, req *http.Request) {
-	log.Println(req)
 	if req.Method == "GET" {
 		fmt.Fprintf(rw, "wrong method")
 	} else {
