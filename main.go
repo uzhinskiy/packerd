@@ -44,8 +44,11 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 			log.Println(string(body))
 
 			var vars variables_struct
-			decoder := json.NewDecoder(req.Body)
-			err = decoder.Decode(&vars)
+			//decoder := json.NewDecoder(req.Body)
+			//err = decoder.Decode(&vars)
+
+			err = json.Unmarshal(body, &vars)
+
 			defer req.Body.Close()
 
 			if err != nil {
