@@ -57,6 +57,7 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 					log.Println(err)
 				}
 				body, err := ioutil.ReadAll(req.Body)
+				log.Println(string(body))
 				_, err = vars_file.WriteString(string(body))
 				if err != nil {
 					log.Println(err)
