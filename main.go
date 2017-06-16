@@ -45,7 +45,7 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 		log.Println(err)
 	}
 	log.Println(vars.host_name)
-	fmt.Fprintf(rw, "OK")
+	fmt.Fprintln(rw, "OK")
 }
 
 func packerPost(rw http.ResponseWriter, req *http.Request) {
@@ -56,7 +56,7 @@ func packerPost(rw http.ResponseWriter, req *http.Request) {
 		req.ParseForm()
 		// logic part of log in
 		fmt.Println("fname:", req.PostForm["fname"])
-		fmt.Fprintf(rw, "OK")
+		fmt.Fprintln(rw, "OK")
 	}
 }
 
