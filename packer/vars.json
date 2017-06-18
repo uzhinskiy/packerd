@@ -1,0 +1,10 @@
+{
+  "xenserver_use1r": "root",
+  "xenserver_password1": "Bycbne2016",
+  "templ_name": "packer-centos7-3",
+  "mem_vol": "1024",
+  "disk_size": "10240",
+  "cpu_num": "1",
+  "host_name": "packer-centos-3",
+  "node_type": "slave"
+}

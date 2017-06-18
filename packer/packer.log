@@ -1,0 +1,97 @@
+xenserver-iso output will be in this color.
+
+==> xenserver-iso: XAPI client session established
+==> xenserver-iso: Downloading ISO CentOS-7-x86_64-Minimal-1611.iso
+==> xenserver-iso: ISO already in ISO library
+==> xenserver-iso: Starting HTTP server on port 8000
+==> xenserver-iso: Step: Create Instance
+==> xenserver-iso: Creating disk Packer-disk: 10240MB
+==> xenserver-iso: Created instance 'a34d4ae0-90d3-e16f-631e-5b6405f55df2'
+==> xenserver-iso: Attached vdi 'bf15ffdb-7c93-4982-b3cc-7fcc81e9c591'
+==> xenserver-iso: Using SR '3dfd946c-e4c2-e979-d613-467eaf8c236f'
+==> xenserver-iso: Step: Start VM Paused
+    xenserver-iso: VM 'a34d4ae0-90d3-e16f-631e-5b6405f55df2' is running on host with address '10.220.150.12'
+==> xenserver-iso: Step: forward the instances VNC port over SSH
+    xenserver-iso: Finding vnc-port for domain '254'
+==> xenserver-iso: Creating a local port forward over SSH on local port 5900
+==> xenserver-iso: Port forward setup. 5900 ---> 127.0.0.1:5915 on 10.220.150.12
+==> xenserver-iso: Unpaused VM a34d4ae0-90d3-e16f-631e-5b6405f55df2
+==> xenserver-iso: Waiting 10s for boot...
+==> xenserver-iso: Connecting to the VM over VNC
+    xenserver-iso: Using local port: 5900
+    xenserver-iso: Connected to the VNC console: QEMU
+    xenserver-iso: Echo found local IP: 10.212.134.194
+==> xenserver-iso: Typing boot commands over VNC...
+==> xenserver-iso: Finished typing.
+==> xenserver-iso: Step: Waiting for installer to shutdown VM.
+==> xenserver-iso: Step: Start VM Paused
+    xenserver-iso: VM 'a34d4ae0-90d3-e16f-631e-5b6405f55df2' is running on host with address '10.220.150.12'
+==> xenserver-iso: Unpaused VM a34d4ae0-90d3-e16f-631e-5b6405f55df2
+==> xenserver-iso: Waiting 10s for boot...
+==> xenserver-iso: Step: Wait for VM's IP to become known to us.
+    xenserver-iso: Got IP '10.220.1.39' from XenServer tools
+==> xenserver-iso: Got IP address '10.220.1.39'
+==> xenserver-iso: Creating a local port forward over SSH on local port 5901
+==> xenserver-iso: Port forward setup. 5901 ---> 10.220.1.39:22 on 10.220.150.12
+==> xenserver-iso: Waiting for SSH to become available...
+==> xenserver-iso: Connected to SSH!
+==> xenserver-iso: Step: Shutting down VM
+    xenserver-iso: Attempting to cleanly shutdown the VM...
+    xenserver-iso: Successfully shut down VM
+==> xenserver-iso: Step: Start VM Paused
+    xenserver-iso: VM 'a34d4ae0-90d3-e16f-631e-5b6405f55df2' is running on host with address '10.220.150.12'
+==> xenserver-iso: Unpaused VM a34d4ae0-90d3-e16f-631e-5b6405f55df2
+==> xenserver-iso: Waiting 10s for boot...
+==> xenserver-iso: Step: Wait for VM's IP to become known to us.
+    xenserver-iso: Got IP '10.220.1.39' from XenServer tools
+==> xenserver-iso: Got IP address '10.220.1.39'
+==> xenserver-iso: Creating a local port forward over SSH on local port 5902
+==> xenserver-iso: Port forward setup. 5902 ---> 10.220.1.39:22 on 10.220.150.12
+==> xenserver-iso: Waiting for SSH to become available...
+==> xenserver-iso: Connected to SSH!
+==> xenserver-iso: Provisioning with shell script: /tmp/packer-shell119221935
+    xenserver-iso: Loaded plugins: fastestmirror
+    xenserver-iso: Could not retrieve mirrorlist http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=os&infra=stock error was
+    xenserver-iso: 12: Timeout on http://mirrorlist.centos.org/?release=7&arch=x86_64&repo=os&infra=stock: (28, 'Resolving timed out after 30547 milliseconds')
+    xenserver-iso:
+    xenserver-iso:
+    xenserver-iso: One of the configured repositories failed (Unknown),
+    xenserver-iso: and yum doesn't have enough cached data to continue. At this point the only
+    xenserver-iso: safe thing yum can do is fail. There are a few ways to work "fix" this:
+    xenserver-iso:
+    xenserver-iso: 1. Contact the upstream for the repository and get them to fix the problem.
+    xenserver-iso:
+    xenserver-iso: 2. Reconfigure the baseurl/etc. for the repository, to point to a working
+    xenserver-iso: upstream. This is most often useful if you are using a newer
+    xenserver-iso: distribution release than is supported by the repository (and the
+    xenserver-iso: packages for the previous distribution release still work).
+    xenserver-iso:
+    xenserver-iso: 3. Run the command with the repository temporarily disabled
+    xenserver-iso: yum --disablerepo=<repoid> ...
+    xenserver-iso:
+    xenserver-iso: 4. Disable the repository permanently, so yum won't use it by default. Yum
+    xenserver-iso: will then just ignore the repository until you permanently enable it
+    xenserver-iso: again or use --enablerepo for temporary usage:
+    xenserver-iso:
+    xenserver-iso: yum-config-manager --disable <repoid>
+    xenserver-iso: or
+    xenserver-iso: subscription-manager repos --disable=<repoid>
+    xenserver-iso:
+    xenserver-iso: 5. Configure the failing repository to be skipped, if it is unavailable.
+    xenserver-iso: Note that yum will try to contact the repo. when it runs most commands,
+    xenserver-iso: so will have to try and fail each time (and thus. yum will be be much
+    xenserver-iso: slower). If it is a very temporary problem though, this is often a nice
+    xenserver-iso: compromise:
+    xenserver-iso:
+    xenserver-iso: yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+    xenserver-iso:
+    xenserver-iso: Cannot find a valid baseurl for repo: base/7/x86_64
+==> xenserver-iso: Destroying VM
+==> xenserver-iso: Destroying VDI's
+==> xenserver-iso: Deleting output directory...
+Build 'xenserver-iso' errored: Script exited with non-zero exit status: 1
+
+==> Some builds didn't complete successfully and had errors:
+--> xenserver-iso: Script exited with non-zero exit status: 1
+
+==> Builds finished but no artifacts were created.
