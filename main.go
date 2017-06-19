@@ -56,34 +56,37 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			if err != nil {
 				log.Println(err)
+				return
 			}
 
-			if vars.Host_name != "" {
-				fname := fmt.Sprintf("/tmp/variables_%s.json", vars.Templ_name)
-				varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
-				defer varsFile.Close()
-				if err != nil {
-					log.Println(err)
-				}
-
-				varsJson, _ := json.Marshal(vars)
-
-				_, err = varsFile.WriteString(string(varsJson))
-				if err != nil {
-					log.Println(err)
-				}
-				rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-				rw.Header().Set("Server", "packed/0.1")
-				rw.WriteHeader(http.StatusCreated)
-				fmt.Fprint(rw, "{\"status\":\"ok\"}")
-
+			fname := fmt.Sprintf("/tmp/variables_%s.json", vars.Templ_name)
+			varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
+			defer varsFile.Close()
+			if err != nil {
+				log.Println(err)
+				return
 			}
+
+			varsJson, _ := json.Marshal(vars)
+
+			_, err = varsFile.WriteString(string(varsJson))
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+			rw.Header().Set("Server", "packed/0.1")
+			rw.WriteHeader(http.StatusCreated)
+			fmt.Fprint(rw, "{\"status\":\"ok\"}")
+
 		}
 	default:
 		{
 			rw.Header().Set("Content-Type", "text/html; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
-			rw.WriteHeader(http.StatusNotImplemented)
+			rw.Header().Set("Allow", "POST")
+			rw.WriteHeader(http.StatusMethodNotAllowed)
+			return
 		}
 	}
 }
