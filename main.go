@@ -19,7 +19,7 @@ var (
 type WorkRequest struct {
 	Platform string
 	Region   string
-	Uid      string
+	UID      string
 }
 
 type vm_struct struct {
@@ -76,7 +76,8 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			}
 
 			// создание структуры для worker-а
-			//work := WorkRequest{Name: name, Delay: delay}
+			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform}
+			log.Println(work)
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
