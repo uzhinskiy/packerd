@@ -103,7 +103,7 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 		{
 			req.ParseForm()
 			// logic part of log in
-			fmt.Println("fname:", req.URL.Path)
+			fmt.Println("fname:", req.URL.Query())
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
 			fmt.Fprint(rw, "{\"status\":\"ok\"}")
