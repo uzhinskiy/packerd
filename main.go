@@ -12,18 +12,20 @@ import (
 )
 
 type WorkRequest struct {
-	Name string
+	Platform string
+	Region   string
+	Uid      string
 }
 
 var (
-	//NWorkers = flag.Int("n", 4, "The number of workers to start")
+	NWorkers = flag.Int("n", 4, "The number of workers to start")
 	HTTPAddr = flag.String("http", "127.0.0.1:8080", "Address to listen for HTTP requests on")
 )
 
 type vm_struct struct {
-	Cloud  string           `json:"cloud,omitempty"`
-	Region string           `json:"region,omitempty"`
-	Vm     variables_struct `json:"vm,omitempty"`
+	Platform string           `json:"platform,omitempty"`
+	Region   string           `json:"region,omitempty"`
+	Vm       variables_struct `json:"vm,omitempty"`
 }
 
 type variables_struct struct {
@@ -41,13 +43,10 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "POST":
 		{
-			body, err := ioutil.ReadAll(req.Body)
-			log.Println(string(body))
-
 			var vm vm_struct
 			var vars variables_struct
-			//decoder := json.NewDecoder(req.Body)
-			//err = decoder.Decode(&vars)
+
+			body, err := ioutil.ReadAll(req.Body)
 
 			err = json.Unmarshal(body, &vm)
 			vars = vm.Vm
@@ -59,7 +58,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			fname := fmt.Sprintf("/tmp/variables_%s.json", vars.Templ_name)
+			fname := fmt.Sprintf("/tmp/%s.json", vars.Templ_name)
 			varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
 			defer varsFile.Close()
 			if err != nil {
@@ -77,7 +76,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
 			rw.WriteHeader(http.StatusCreated)
-			fmt.Fprint(rw, "{\"status\":\"ok\"}")
+			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vars.Templ_name+"\"}")
 
 		}
 	default:
