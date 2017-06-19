@@ -80,7 +80,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			log.Println(work)
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-			rw.Header().Set("Server", "packed/0.1")
+			rw.Header().Set("Server", "packerd/0.1")
 			rw.WriteHeader(http.StatusCreated)
 			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
 
@@ -88,7 +88,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	default:
 		{
 			rw.Header().Set("Content-Type", "text/html; charset=utf-8")
-			rw.Header().Set("Server", "packed/0.1")
+			rw.Header().Set("Server", "packerd/0.1")
 			rw.Header().Set("Allow", "POST")
 			rw.WriteHeader(http.StatusMethodNotAllowed)
 			return
@@ -103,15 +103,15 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 		{
 			req.ParseForm()
 			// logic part of log in
-			fmt.Println("fname:", req.Form)
+			fmt.Println("fname:", req.URL.Path)
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-			rw.Header().Set("Server", "packed/0.1")
+			rw.Header().Set("Server", "packerd/0.1")
 			fmt.Fprint(rw, "{\"status\":\"ok\"}")
 		}
 	default:
 		{
 			rw.Header().Set("Content-Type", "text/html; charset=utf-8")
-			rw.Header().Set("Server", "packed/0.1")
+			rw.Header().Set("Server", "packerd/0.1")
 			rw.WriteHeader(http.StatusNotImplemented)
 		}
 	}
