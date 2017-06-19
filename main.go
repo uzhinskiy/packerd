@@ -11,21 +11,22 @@ import (
 	//    "os/exec"
 )
 
+var (
+	NWorkers = flag.Int("n", 4, "The number of workers to start")
+	HTTPAddr = flag.String("http", "127.0.0.1:8080", "Address to listen for HTTP requests on")
+)
+
 type WorkRequest struct {
 	Platform string
 	Region   string
 	Uid      string
 }
 
-var (
-	NWorkers = flag.Int("n", 4, "The number of workers to start")
-	HTTPAddr = flag.String("http", "127.0.0.1:8080", "Address to listen for HTTP requests on")
-)
-
 type vm_struct struct {
 	Platform string           `json:"platform,omitempty"`
 	Region   string           `json:"region,omitempty"`
-	Vm       variables_struct `json:"vm,omitempty"`
+	UID      string           `json:"UID,omitempty"`
+	Vars     variables_struct `json:"vars,omitempty"`
 }
 
 type variables_struct struct {
@@ -49,7 +50,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			body, err := ioutil.ReadAll(req.Body)
 
 			err = json.Unmarshal(body, &vm)
-			vars = vm.Vm
+			vars = vm.Vars
 
 			defer req.Body.Close()
 
@@ -73,6 +74,10 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 				log.Println(err)
 				return
 			}
+
+			// создание структуры для worker-а
+			//work := WorkRequest{Name: name, Delay: delay}
+
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
 			rw.WriteHeader(http.StatusCreated)
