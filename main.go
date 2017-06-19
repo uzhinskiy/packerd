@@ -81,7 +81,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
 			rw.WriteHeader(http.StatusCreated)
-			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vars.Templ_name+"\"}")
+			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
 
 		}
 	default:
