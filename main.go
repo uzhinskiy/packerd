@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,44 +11,39 @@ import (
 	//    "os/exec"
 )
 
+var (
+	//NWorkers = flag.Int("n", 4, "The number of workers to start")
+	HTTPAddr = flag.String("http", "127.0.0.1:8080", "Address to listen for HTTP requests on")
+)
+
+type vm_struct struct {
+	Cloud  string           `json:"cloud,omitempty"`
+	Region string           `json:"region,omitempty"`
+	Vm     variables_struct `json:"vm,omitempty"`
+}
+
 type variables_struct struct {
-	Xenserver_user     string `json:"xenserver_user,omitempty"`
-	Xenserver_password string `json:"xenserver_password,omitempty"`
-	Templ_name         string `json:"templ_name,omitempty"`
-	Mem_vol            int    `json:"mem_vol,omitempty"`
-	Disk_size1         int    `json:"disk_size1,omitempty"`
-	Cpu_num            string `json:"cpu_num,omitempty"`
-	Host_name          string `json:"host_name,omitempty"`
+	Templ_name string `json:"templ_name,omitempty"`
+	Mem_vol    string `json:"mem_vol,omitempty"`
+	Disk_size  string `json:"disk_size,omitempty"`
+	Cpu_num    string `json:"cpu_num,omitempty"`
+	Host_name  string `json:"host_name,omitempty"`
 }
 
-func packerJson1(rw http.ResponseWriter, req *http.Request) {
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(string(body))
-	var vars variables_struct
-	err = json.Unmarshal(body, &vars)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(vars.Host_name)
-	fmt.Fprintf(rw, "OK\n")
-}
-
-func packerJson(rw http.ResponseWriter, req *http.Request) {
-	log.Println(req)
+func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "POST":
 		{
 			body, err := ioutil.ReadAll(req.Body)
 			log.Println(string(body))
 
+			var vm vm_struct
 			var vars variables_struct
 			//decoder := json.NewDecoder(req.Body)
 			//err = decoder.Decode(&vars)
 
-			err = json.Unmarshal(body, &vars)
+			err = json.Unmarshal(body, &vm)
+			vars = vm.Vm
 
 			defer req.Body.Close()
 
@@ -57,18 +53,21 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 
 			if vars.Host_name != "" {
 				fname := fmt.Sprintf("/tmp/variables_%s.json", vars.Templ_name)
-				vars_file, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
-				defer vars_file.Close()
+				varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
+				defer varsFile.Close()
 				if err != nil {
 					log.Println(err)
 				}
 
-				_, err = vars_file.WriteString(string(body))
+				varsJson, _ := json.Marshal(vars)
+
+				_, err = varsFile.WriteString(string(varsJson))
 				if err != nil {
 					log.Println(err)
 				}
 				rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 				rw.Header().Set("Server", "packed/0.1")
+				rw.WriteHeader(http.StatusCreated)
 				fmt.Fprint(rw, "{\"status\":\"ok\"}")
 
 			}
@@ -82,14 +81,14 @@ func packerJson(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func packerPost(rw http.ResponseWriter, req *http.Request) {
-	log.Println(req)
+func packerStatus(rw http.ResponseWriter, req *http.Request) {
+	log.Println(req.URL)
 	switch req.Method {
-	case "POST":
+	case "GET":
 		{
 			req.ParseForm()
 			// logic part of log in
-			fmt.Println("fname:", req.PostForm["fname"])
+			fmt.Println("fname:", req.Form)
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packed/0.1")
 			fmt.Fprint(rw, "{\"status\":\"ok\"}")
@@ -104,9 +103,11 @@ func packerPost(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/post", packerPost)
-	http.HandleFunc("/json", packerJson)
-	err := http.ListenAndServe(":8080", nil)
+	flag.Parse()
+	http.HandleFunc("/status", packerStatus)
+	http.HandleFunc("/create", packerCreate)
+	log.Println("HTTP server listening on", *HTTPAddr)
+	err := http.ListenAndServe(*HTTPAddr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
