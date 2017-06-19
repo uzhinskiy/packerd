@@ -48,19 +48,19 @@
     },
     {
       "type": "file",
-      "source": "/tmp/packer/files/authorized_keys.tar.gz",
+      "source": "/home/delta9/prog/packerd/packer/files/authorized_keys.tar.gz",
       "destination": "/home/devops/"
     },
     {
       "type": "shell",
       "execute_command": "echo '123456' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "/tmp/packer/scripts/script-1.sh"
+      "script": "/home/delta9/prog/packerd/packer/scripts/script-1.sh"
     }
   ],
   "post-processors": [
     {
       "type": "shell-local",
-      "inline": [ "/tmp/packer/scripts/post-proc.sh {{user `templ_name`}} {{user `host_name`}}" ]
+      "inline": [ "/home/delta9/prog/packerd/packer/scripts/post-proc.sh {{user `templ_name`}} {{user `host_name`}}" ]
     }
   ]
 }
