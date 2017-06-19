@@ -30,6 +30,9 @@ type variables_struct struct {
 	Host_name  string `json:"host_name,omitempty"`
 }
 
+// Буфферизиованный канал через который передаются задания.
+var WorkQueue = make(chan WorkRequest, 100)
+
 func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "POST":
