@@ -119,7 +119,7 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 
 func main() {
 	flag.Parse()
-	http.HandleFunc("/status", packerStatus)
+	http.HandleFunc("/status/", packerStatus)
 	http.HandleFunc("/create", packerCreate)
 	log.Println("HTTP server listening on", *HTTPAddr)
 	err := http.ListenAndServe(*HTTPAddr, nil)
