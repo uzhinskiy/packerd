@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	//    "os/exec"
 )
 
@@ -20,6 +21,11 @@ type WorkRequest struct {
 	Platform string
 	Region   string
 	UID      string
+}
+
+type WorkResponse struct {
+	UID    string
+	Status string
 }
 
 type vm_struct struct {
@@ -39,6 +45,7 @@ type variables_struct struct {
 
 // Буфферизиованный канал через который передаются задания.
 var WorkQueue = make(chan WorkRequest, 100)
+var ResponseQueue = make(chan WorkResponse, 100)
 
 func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
@@ -51,6 +58,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			err = json.Unmarshal(body, &vm)
 			vars = vm.Vars
+			varsJson, _ := json.Marshal(vars)
 
 			defer req.Body.Close()
 
@@ -59,15 +67,13 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			fname := fmt.Sprintf("/tmp/%s.json", vars.Templ_name)
+			fname := fmt.Sprintf("/tmp/%s.json", vm.UID)
 			varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
 			defer varsFile.Close()
 			if err != nil {
 				log.Println(err)
 				return
 			}
-
-			varsJson, _ := json.Marshal(vars)
 
 			_, err = varsFile.WriteString(string(varsJson))
 			if err != nil {
@@ -77,7 +83,8 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			// создание структуры для worker-а
 			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform}
-			log.Println(work)
+			WorkQueue <- work
+			fmt.Println("Work request queued")
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
@@ -97,16 +104,25 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 }
 
 func packerStatus(rw http.ResponseWriter, req *http.Request) {
-	log.Println(req.URL)
 	switch req.Method {
 	case "GET":
 		{
+			var resp WorkResponse
+
 			req.ParseForm()
-			// logic part of log in
-			fmt.Println("fname:", req.URL.Path)
+			uid := path.Base(req.URL.Path)
+
+			select {
+			case resp := <-ResponseQueue:
+				log.Println(resp)
+			default:
+				resp = WorkResponse{UID: uid, Status: "proccess"}
+			}
+
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
-			fmt.Fprint(rw, "{\"status\":\"ok\"}")
+			json, _ := json.Marshal(resp)
+			fmt.Fprint(rw, string(json))
 		}
 	default:
 		{
@@ -119,6 +135,11 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 
 func main() {
 	flag.Parse()
+
+	for w := 1; w <= *NWorkers; w++ {
+		go worker(w, WorkQueue, ResponseQueue)
+	}
+
 	http.HandleFunc("/status/", packerStatus)
 	http.HandleFunc("/create", packerCreate)
 	log.Println("HTTP server listening on", *HTTPAddr)
