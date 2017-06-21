@@ -57,15 +57,15 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			body, err := ioutil.ReadAll(req.Body)
 
 			err = json.Unmarshal(body, &vm)
-			vars = vm.Vars
-			varsJson, _ := json.Marshal(vars)
-
-			defer req.Body.Close()
-
 			if err != nil {
 				log.Println(err)
 				return
 			}
+
+			vars = vm.Vars
+			varsJson, _ := json.Marshal(vars)
+
+			defer req.Body.Close()
 
 			fname := fmt.Sprintf("/tmp/%s.json", vm.UID)
 			varsFile, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE, 0600)
