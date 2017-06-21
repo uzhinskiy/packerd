@@ -83,7 +83,6 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			// создание структуры для worker-а
 			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform}
-			Put(work)
 			WorkQueue <- work
 			log.Println("Work request queued")
 
@@ -136,6 +135,14 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 
 func main() {
 	flag.Parse()
+
+	var str Storage
+	err1 := str.New()
+	defer str.Close()
+
+	str.Put("ABC", "fuck")
+
+	log.Println(err1, str)
 
 	for w := 1; w <= *NWorkers; w++ {
 		go worker(w, WorkQueue, ResponseQueue)
