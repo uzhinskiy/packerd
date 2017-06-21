@@ -83,13 +83,14 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			// создание структуры для worker-а
 			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform}
+			Put(work)
 			WorkQueue <- work
-			fmt.Println("Work request queued")
+			log.Println("Work request queued")
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
 			rw.WriteHeader(http.StatusCreated)
-			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
+			log.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
 
 		}
 	default:
