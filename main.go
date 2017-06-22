@@ -19,6 +19,7 @@ var (
 type WorkRequest struct {
 	Platform string
 	Region   string
+	Role     string
 	UID      string
 }
 
@@ -30,6 +31,7 @@ type WorkEntry struct {
 type vm_struct struct {
 	Platform string           `json:"platform,omitempty"`
 	Region   string           `json:"region,omitempty"`
+	Role     string           `json:"role,omitempty"`
 	UID      string           `json:"UID,omitempty"`
 	Vars     variables_struct `json:"vars,omitempty"`
 }
@@ -81,7 +83,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			}
 
 			// создание структуры для worker-а
-			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform}
+			work := WorkRequest{UID: vm.UID, Region: vm.Region, Platform: vm.Platform, Role: vm.Role}
 			WorkQueue <- work
 			log.Println("Work request queued")
 
