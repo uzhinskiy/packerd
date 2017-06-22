@@ -87,6 +87,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
+			rw.Header().Set("Access-Control-Allow-Origin", "*")
 			rw.WriteHeader(http.StatusCreated)
 			fmt.Fprintln(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
 
