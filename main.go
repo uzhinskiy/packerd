@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	//    "os/exec"
 )
 
 var (
@@ -23,9 +22,9 @@ type WorkRequest struct {
 	UID      string
 }
 
-type WorkResponse struct {
-	UID    string
+type WorkEntry struct {
 	Status string
+	UID    string
 }
 
 type vm_struct struct {
@@ -45,7 +44,7 @@ type variables_struct struct {
 
 // Буфферизиованный канал через который передаются задания.
 var WorkQueue = make(chan WorkRequest, 100)
-var ResponseQueue = make(chan WorkResponse, 100)
+var ResponseQueue = make(chan WorkEntry, 100)
 
 func packerCreate(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
@@ -89,7 +88,7 @@ func packerCreate(rw http.ResponseWriter, req *http.Request) {
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
 			rw.WriteHeader(http.StatusCreated)
-			fmt.Fprint(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
+			fmt.Fprintln(rw, "{\"status\":\"ok\", \"UID\":\""+vm.UID+"\"}")
 
 		}
 	default:
@@ -107,7 +106,7 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
 		{
-			var resp WorkResponse
+			var resp WorkEntry
 
 			req.ParseForm()
 			uid := path.Base(req.URL.Path)
@@ -116,13 +115,13 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 			case resp := <-ResponseQueue:
 				log.Println(resp)
 			default:
-				resp = WorkResponse{UID: uid, Status: "proccess"}
+				resp = RedisGet(uid)
 			}
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 			rw.Header().Set("Server", "packerd/0.1")
 			json, _ := json.Marshal(resp)
-			fmt.Fprint(rw, string(json))
+			fmt.Fprintln(rw, string(json))
 		}
 	default:
 		{
@@ -135,14 +134,6 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 
 func main() {
 	flag.Parse()
-
-	var str Storage
-	err1 := str.New()
-	defer str.Close()
-
-	str.Put("ABC", "fuck")
-
-	log.Println(err1, str)
 
 	for w := 1; w <= *NWorkers; w++ {
 		go worker(w, WorkQueue, ResponseQueue)
