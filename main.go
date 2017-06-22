@@ -119,6 +119,7 @@ func packerStatus(rw http.ResponseWriter, req *http.Request) {
 			}
 
 			rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+			rw.Header().Set("Access-Control-Allow-Origin", "*")
 			rw.Header().Set("Server", "packerd/0.1")
 			json, _ := json.Marshal(resp)
 			fmt.Fprintln(rw, string(json))
