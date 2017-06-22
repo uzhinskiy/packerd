@@ -42,10 +42,13 @@ func RedisGet(id string) WorkEntry {
 	if err != nil {
 		log.Println(err)
 	}
-
-	err = json.Unmarshal(reply.([]byte), &w)
-	if err != nil {
-		log.Println(err)
+	if reply != nil {
+		err = json.Unmarshal(reply.([]byte), &w)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		w = WorkEntry{UID: id, Status: "unknow"}
 	}
 	return w
 }
