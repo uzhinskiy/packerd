@@ -1,4 +1,5 @@
 {
   "xenserver_user": "root",
+  "xenserver_host": "10.220.150.11",
   "xenserver_password": "Bycbne2016"
 }

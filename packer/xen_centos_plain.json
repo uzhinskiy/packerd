@@ -2,7 +2,7 @@
   "builders": [
     {
       "type": "xenserver-iso",
-      "remote_host": "10.220.150.11",
+      "remote_host": "{{user `xenserver_host`}}",
       "remote_username": "{{user `xenserver_user`}}",
       "remote_password": "{{user `xenserver_password`}}",
       "iso_urls": [
