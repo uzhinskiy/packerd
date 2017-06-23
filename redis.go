@@ -12,7 +12,7 @@ import (
 func RedisConnect() redis.Conn {
 	c, err := redis.Dial("tcp", ":6379")
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 	}
 	return c
 }
@@ -42,13 +42,10 @@ func RedisGet(id string) WorkEntry {
 	if err != nil {
 		log.Println(err)
 	}
-	if reply != nil {
-		err = json.Unmarshal(reply.([]byte), &w)
-		if err != nil {
-			log.Println(err)
-		}
-	} else {
-		w = WorkEntry{UID: id, Status: "unknow"}
+
+	err = json.Unmarshal(reply.([]byte), &w)
+	if err != nil {
+		log.Println(err)
 	}
 	return w
 }
