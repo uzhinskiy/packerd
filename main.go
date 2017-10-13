@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	NWorkers = flag.Int("n", 4, "The number of workers to start")
+	NWorkers = flag.Int("n", 3, "The number of workers to start")
 	HTTPAddr = flag.String("http", "127.0.0.1:8080", "Address to listen for HTTP requests on")
 )
 
