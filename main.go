@@ -145,7 +145,7 @@ func main() {
 
 	http.HandleFunc("/status/", packerStatus)
 	http.HandleFunc("/create", packerCreate)
-	log.Println("HTTP server listening on", *HTTPAddr)
+	log.Println("HTTP server listening on: ", *HTTPAddr)
 	err := http.ListenAndServe(*HTTPAddr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
